@@ -1,0 +1,13 @@
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+);
+
+CREATE TABLE login_attempts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    attempt_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    success BOOLEAN,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
