@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Alpha Fire Banking - Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f6f5;
+    }
+
+    header {
+      background-color: #e74c3c;
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    .logout-btn {
+      background-color: white;
+      color: #e74c3c;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 20px;
+    }
+
+    .welcome {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .content {
+      display: flex;
+      gap: 40px;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .balance-box {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+      flex: 1;
+    }
+
+    .balance-box h3 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .transactions-box {
+      flex: 2;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Alpha Fire Banking</h1>
+    <button class="logout-btn" onclick="logout()">Log Out</button>
+  </header>
+
+  <div class="main-container">
+    <div class="welcome">Welcome, <span id="username">User</span>!</div>
+    <div class="content">
+      <div class="balance-box">
+        <h3>Balance</h3>
+        <p id="balance">$0.00</p>
+      </div>
+      <div class="transactions-box">
+        <h3>Transactions</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody id="transaction-list">
+            <tr>
+              <td colspan="3" style="text-align:center; color: #999;">No transactions yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Placeholder example — should be populated from backend
+    document.getElementById("username").innerText = "John Doe"; // Replace with session/user data
+    document.getElementById("balance").innerText = "$1,250.00"; // Replace with actual balance
+
+    function logout() {
+      // Redirect to login
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>
