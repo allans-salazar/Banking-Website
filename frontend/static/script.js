@@ -6,10 +6,11 @@ function searchUser() {
             if (data.error) {
                 alert("Login failed: " + data.error);
             } else {
-                alert(`Welcome back, ${data.username}! Your role is: ${data.role}`);
+                alert(`Welcome, ${data.username}! Role: ${data.role}`);
             }
         })
         .catch(error => {
             console.error('Error:', error);
+            alert("Error occurred while logging in.");
         });
 }

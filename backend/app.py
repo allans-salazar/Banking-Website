@@ -1,27 +1,27 @@
-from flask import Flask, request, jsonify
-from flask import send_from_directory
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
 import cx_Oracle
+import os
 
-app = Flask(__name__)
+# Set correct paths
+base_dir = os.path.dirname(os.path.abspath(__file__))
+template_dir = os.path.abspath(os.path.join(base_dir, '..', 'frontend'))
+static_dir = os.path.join(template_dir, 'static')
 
-# Database connection setup
+# Create Flask app
+app = Flask(__name__, static_folder=static_dir, template_folder=template_dir)
+CORS(app)
+
+# Serve index.html from frontend
+@app.route('/')
+def serve_index():
+    return send_from_directory(template_dir, 'index.html')
+
+# Oracle DB connection (adjust if needed)
 dsn = cx_Oracle.makedsn("localhost", 1521, service_name="ORCLCDB")
 connection = cx_Oracle.connect(user="system", password="oracle", dsn=dsn)
 
-# Home route
-@app.route('/')
-def home():
-    return '''
-        <h1>CSCI Database Group Project</h1>
-        <p>Backend Flask Server is running and connected to Oracle SQL</p>
-        <p>Use the <strong>frontend website</strong> to search for users.</p>
-    '''
-
-@app.route('/frontend') #This is the frontend of the website http://127.0.0.1:5000/frontend
-def serve_frontend():
-    return send_from_directory('../frontend', 'index.html')
-
-# API route to search for users
+# API route to get user info
 @app.route('/get_user', methods=['GET'])
 def get_user():
     user_id = request.args.get('user_id')

@@ -1,0 +1,6 @@
+
+source ../venv/bin/activate
+
+export DYLD_LIBRARY_PATH=$HOME/oracle_client/instantclient_23_3
+
+python app.py
