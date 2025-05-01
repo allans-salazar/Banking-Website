@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Alpha Fire Banking - Create Account</title>
+  <title>Alpha Fire Banking - Sign Up</title>
   <style>
     body {
       margin: 0;
@@ -76,32 +76,16 @@
   <div class="container">
     <div class="form-box">
       <h2>Create Account</h2>
-      <input type="text" id="firstName" placeholder="First Name">
-      <input type="text" id="lastName" placeholder="Last Name">
+      <input type="text" id="name" placeholder="First Name">
+      <input type="text" id="lastname" placeholder="Last Name">
+      <input type="text" id="username" placeholder="Username">
       <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
       <input type="text" id="ssn" placeholder="SSN">
-      <input type="password" id="password" placeholder="Create Password">
-      <button onclick="registerAccount()">Create Account</button>
+      <button onclick="registerUser()">Register</button>
     </div>
   </div>
 
-  <script>
-    function registerAccount() {
-      const firstName = document.getElementById("firstName").value;
-      const lastName = document.getElementById("lastName").value;
-      const email = document.getElementById("email").value;
-      const ssn = document.getElementById("ssn").value;
-      const password = document.getElementById("password").value;
-
-      // Placeholder logic — replace with server POST call
-      if (firstName && lastName && email && ssn && password) {
-        alert("Account created successfully!");
-        window.location.href = "login.html"; // Redirect to login
-      } else {
-        alert("Please fill out all fields.");
-      }
-    }
-  </script>
-
+  <script src="/static/script.js"></script>
 </body>
 </html>

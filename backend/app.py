@@ -43,6 +43,37 @@ def login():
         return jsonify({"username": user[0], "role": user[1]})
     else:
         return jsonify({"error": "Invalid credentials"})
+    
+@app.route('/sign_up.html')
+def serve_sign_up():
+    return send_from_directory(template_dir, 'sign_up.html')
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+
+    name = data.get("name")
+    lastname = data.get("lastname")
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+    ssn = data.get("ssn")
+
+    # Basic validation
+    if not all([name, lastname, username, email, password, ssn]):
+        return jsonify({"error": "Missing required fields"})
+
+    try:
+        cursor = connection.cursor()
+        cursor.execute("""
+            INSERT INTO users (name, last_name, username, email, password, ssn, role)
+            VALUES (:1, :2, :3, :4, :5, :6, 'customer')
+        """, (name, lastname, username, email, password, ssn))
+        connection.commit()
+        return jsonify({"message": "Account created successfully!"})
+    except Exception as e:
+        print("Registration error:", e)
+        return jsonify({"error": "Registration failed."})
 
 # === Optional: Static file serving (script.js, etc.) ===
 @app.route('/static/<path:filename>')

@@ -5,11 +5,33 @@ CREATE TABLE users (
     role VARCHAR2(20) DEFAULT 'user'
 );
 
+ALTER TABLE users MODIFY password VARCHAR2(100) NOT NULL;
+ALTER TABLE users MODIFY role VARCHAR2(20) DEFAULT 'customer';
+ALTER TABLE users ADD CONSTRAINT unique_username UNIQUE (username);
 
+ALTER TABLE users ADD ( 
+    name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    email VARCHAR2(100),
+    ssn VARCHAR2(11)
+);
 
 INSERT INTO users (username, password, role) VALUES ('allanSal1', 'password', 'admin');
+
+UPDATE users SET name = 'Allan', last_name = 'Salazar', email = 'allan@bank.com', ssn = '321-45-6789' WHERE username = 'allanSal1';
+
 INSERT INTO users (username, password, role) VALUES ('anib4l', 'csci32', 'admin');
+
+UPDATE users SET name = 'Anibal', last_name = 'Sanic', email = 'anibal@bank.com', ssn = '324-53-7532' WHERE username = 'anib4l';
+
 INSERT INTO users (username, password, role) VALUES ('stev98n', 'pc123', 'admin');
+
+UPDATE users SET name = 'Steven', last_name = 'Feal', email = 'steven@bank.com', ssn = '431-32-4902' WHERE username = 'stev98n';
+
 INSERT INTO users (username, password) VALUES ('c98_Gomez', 'abc122');
+
+UPDATE users SET name = 'Cris', last_name = 'Troy', email = 'cris_party@yahoo.com', ssn = '312-65-4356' WHERE username = 'c98_Gomez';
+
+update users set role = 'customer' where username = 'c98_Gomez';
 
 COMMIT;
