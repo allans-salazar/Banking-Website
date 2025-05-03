@@ -33,14 +33,17 @@ def login():
 
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT username, role FROM users 
+        SELECT name, role FROM users 
         WHERE username = :1 AND password = :2
     """, (username, password))
-    
+
     user = cursor.fetchone()
 
     if user:
-        return jsonify({"username": user[0], "role": user[1]})
+        return jsonify({
+            "name": user[0],  # <-- FIRST NAME from DB
+            "role": user[1]
+        })
     else:
         return jsonify({"error": "Invalid credentials"})
     
@@ -48,6 +51,11 @@ def login():
 def serve_sign_up():
     return send_from_directory(template_dir, 'sign_up.html')
 
+@app.route('/user_page.html')
+def serve_user_page():
+    return send_from_directory(template_dir, 'user_page.html')
+
+# === API: Register route ===
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()

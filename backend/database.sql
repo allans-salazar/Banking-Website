@@ -35,3 +35,8 @@ UPDATE users SET name = 'Cris', last_name = 'Troy', email = 'cris_party@yahoo.co
 update users set role = 'customer' where username = 'c98_Gomez';
 
 COMMIT;
+
+update users set ssn = 321456789 where username = 'allanSal1';
+update users set ssn = 324537532 where username = 'anib4l';
+update users set ssn = 431324902 where username = 'stev98n';
+update users set ssn = 312654356 where username = 'c98_Gomez';

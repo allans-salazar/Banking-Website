@@ -124,17 +124,9 @@
       </div>
     </div>
   </div>
-
   <script>
-    // Placeholder example — should be populated from backend
-    document.getElementById("username").innerText = "John Doe"; // Replace with session/user data
-    document.getElementById("balance").innerText = "$1,250.00"; // Replace with actual balance
-
-    function logout() {
-      // Redirect to login
-      window.location.href = "login.html";
-    }
+    const name = localStorage.getItem("user_name");
+    document.getElementById("username").textContent = name ?? "Guest";
   </script>
-
 </body>
 </html>
