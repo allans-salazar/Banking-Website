@@ -8,6 +8,7 @@ CREATE TABLE users (
 ALTER TABLE users MODIFY password VARCHAR2(100) NOT NULL;
 ALTER TABLE users MODIFY role VARCHAR2(20) DEFAULT 'customer';
 ALTER TABLE users ADD CONSTRAINT unique_username UNIQUE (username);
+ALTER TABLE users ADD CONSTRAINT unique_ssn UNIQUE (ssn);
 
 ALTER TABLE users ADD ( 
     name VARCHAR2(50),
@@ -130,3 +131,14 @@ INSERT INTO transactions (user_id, amount, transaction_type) VALUES (6, 110, 'sp
 INSERT INTO transactions (user_id, amount, transaction_type) VALUES (7, 120, 'home');
 INSERT INTO transactions (user_id, amount, transaction_type) VALUES (4, 130, 'garden');
 INSERT INTO transactions (user_id, amount, transaction_type) VALUES (4, 140, 'books');
+
+
+
+update customers set balance = 1000 where user_id = 4;
+update customers set balance = 2000 where user_id = 41;
+update customers set balance = 3000 where user_id = 84;
+update customers set balance = 4000 where user_id = 83;
+update customers set balance = 5000 where user_id = 85;
+update customers set balance = 6000 where user_id = 81;
+update customers set balance = 7000 where user_id = 82;
+
