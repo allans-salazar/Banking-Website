@@ -14,6 +14,7 @@ function loginUser() {
     } else {
       // Save name to local storage and redirect
       localStorage.setItem("user_name", data.name);
+      localStorage.setItem("username", email);
       window.location.href = "/user_page.html";
     }
   })
@@ -54,4 +55,58 @@ function loginUser() {
       console.error(err);
       alert("Error during registration.");
     });
+  }
+
+
+  function loadDashboard() {
+    const username = localStorage.getItem("username");
+  
+    if (!username) {
+      alert("No user logged in.");
+      window.location.href = "/";
+      return;
+    }
+  
+    fetch(`/dashboard/${username}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+  
+        // Show name
+        const nameSpan = document.getElementById("username");
+        if (nameSpan) nameSpan.textContent = data.name;
+  
+        // Show balance
+        const balanceSpan = document.getElementById("balance");
+        if (balanceSpan) balanceSpan.textContent = "$" + parseFloat(data.balance).toFixed(2);
+  
+        // Show transactions
+        const tbody = document.getElementById("transaction-list");
+        if (tbody) {
+          tbody.innerHTML = "";
+  
+          if (data.transactions.length === 0) {
+            const row = document.createElement("tr");
+            row.innerHTML = `<td colspan="3" style="text-align:center; color: #999;">No transactions yet</td>`;
+            tbody.appendChild(row);
+          } else {
+            data.transactions.forEach(tx => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${tx.date}</td>
+                <td>${tx.description}</td>
+                <td>${tx.amount >= 0 ? '-' : '-'}$${Math.abs(tx.amount).toFixed(2)}</td>
+              `;
+              tbody.appendChild(row);
+            });
+          }
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error loading dashboard.");
+      });
   }

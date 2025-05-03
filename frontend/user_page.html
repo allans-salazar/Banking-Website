@@ -124,9 +124,17 @@
       </div>
     </div>
   </div>
+
+  <script src="/static/script.js"></script>
   <script>
-    const name = localStorage.getItem("user_name");
-    document.getElementById("username").textContent = name ?? "Guest";
+    // Load user dashboard data on page load
+    window.onload = loadDashboard;
+
+    // Clear storage and redirect to login
+    function logout() {
+      localStorage.clear();
+      window.location.href = "/";
+    }
   </script>
 </body>
 </html>
