@@ -7,11 +7,17 @@ Database dealing with Banks (ex. BofA, Chase, Capital One)
 
 #### Project Includes:
 •	Database system that simulates SQL injection attacks and implement security measures to detect them.
+
 •	Front-end: A basic web application (HTML/CSS/JS, Python Flask).
+
 •   Back-end: Oracle SQL, Docker
+
 •	Store logs of SQL queries to detect possible attacks such as: Log in failures, MFA failures, and SQL Injections
+
 •   Prevention of unauthorized access includes the blocking of accounts to log in after 5 attempts have been made.
+
 •   Includes MFA of a pin for Admins, create a extra layer of security 
+
 •   Admins are able to view Logs of suspicous activites, while users only have access to their bank accounts. 
 
 #### Problem Statement: 
