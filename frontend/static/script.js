@@ -30,12 +30,30 @@ function loginUser() {
       logSuspiciousActivity(email, "failed_login");
       alert("Login failed: " + data.error);
     } else {
-      localStorage.setItem("user_name", data.name);
-      localStorage.setItem("username", email);
-
       if (data.message === "admin") {
-        window.location.href = "/admin_dashboard.html";
+        const pin = prompt("Enter Admin PIN for 2FA:");
+        if (pin === "111") {
+          localStorage.setItem("user_name", data.name);
+          localStorage.setItem("username", email);
+          window.location.href = "/admin_dashboard.html";
+        } else {
+          alert("Incorrect PIN. Access denied.");
+      
+          // Log failed PIN attempt
+          fetch("/log_suspicious", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              username: email,
+              log_type: "failed_2fa_pin"
+            })
+          }).catch((err) => console.error("Failed to log PIN attempt:", err));
+        }
       } else {
+        localStorage.setItem("user_name", data.name);
+        localStorage.setItem("username", email);
         window.location.href = "/user_page.html";
       }
     }
