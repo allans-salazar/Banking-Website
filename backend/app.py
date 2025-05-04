@@ -33,11 +33,30 @@ def login():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+
+        # Check for failed login attempts
+        cursor.execute("""
+            SELECT COUNT(*) FROM logs
+            WHERE user_id = (SELECT user_id FROM users WHERE username = :1)
+            AND log_type = 'failed_login'
+        """, (username,))
+        failed_count = cursor.fetchone()[0]
+
+        if failed_count >= 5:
+            cursor.execute("""
+                INSERT INTO logs (user_id, log_type)
+                VALUES ((SELECT user_id FROM users WHERE username = :1), 'blocked_user')
+            """, (username,))
+            conn.commit()
+            return jsonify({"error": "You have been blocked due to too many failed login attempts."}), 403
+
+        # Check credentials
         cursor.execute("""
             SELECT user_id, role FROM users
             WHERE username = :1 AND password = :2
         """, (username, password))
         row = cursor.fetchone()
+
         if row:
             user_id, role = row
             cursor.execute("SELECT name FROM customers WHERE user_id = :1", (user_id,))
@@ -45,27 +64,18 @@ def login():
             name = name_row[0] if name_row else "Admin"
             return jsonify({"message": role, "name": name})
         else:
+            # Log failed login attempt
+            cursor.execute("""
+                INSERT INTO logs (user_id, log_type)
+                VALUES ((SELECT user_id FROM users WHERE username = :1), 'failed_login')
+            """, (username,))
+            conn.commit()
             return jsonify({"error": "Invalid credentials"}), 401
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
-
-def log_security_event(user_id, log_type):
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor()
-        cursor.execute("""
-            INSERT INTO logs (user_id, log_type)
-            VALUES (:1, :2)
-        """, (user_id, log_type))
-        connection.commit()
-    except Exception as e:
-        print(f"Logging error: {e}")
-    finally:
-        cursor.close()
-        connection.close()    
 
 @app.route('/sign_up.html')
 def serve_sign_up():
