@@ -17,12 +17,6 @@ CREATE TABLE customers (
     balance NUMBER DEFAULT 0
 );
 
--- Insert these users into the customers table
-INSERT INTO customers (user_id, name, last_name, balance)
-SELECT user_id, name, last_name, 0
-FROM users
-WHERE username IN ();
-
 CREATE TABLE admins (
     user_id NUMBER PRIMARY KEY,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
