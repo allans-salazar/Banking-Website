@@ -9,7 +9,7 @@ template_dir = os.path.abspath(os.path.join(base_dir, '..', 'frontend'))
 static_dir = os.path.join(template_dir, 'static')
 
 # === Create Flask app with static/template folders ===
-app = Flask(__name__, static_folder=static_dir, template_folder=template_dir)
+app = Flask(__name__, static_folder="../frontend", static_url_path="/")
 CORS(app)
 
 # === Serve index.html ===
@@ -25,31 +25,32 @@ def get_db_connection():
     return cx_Oracle.connect(user="system", password="oracle", dsn="localhost:1521/ORCLCDB")
 
 # === API: Login route ===
-@app.route('/login', methods=['POST'])
+@app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
-
-    if not username or not password:
-        return jsonify({"error": "Missing username or password"})
-
-    cursor = connection.cursor()
-    cursor.execute("""
-        SELECT name, role FROM users 
-        WHERE username = :1 AND password = :2
-    """, (username, password))
-
-    user = cursor.fetchone()
-
-    if user:
-        return jsonify({
-            "name": user[0],  # user[0] is the name
-            "role": user[1], # user[1] is the role
-            "username": username # Return the username for the frontend
-        })
-    else:
-        return jsonify({"error": "Invalid credentials"})
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT user_id, role FROM users
+            WHERE username = :1 AND password = :2
+        """, (username, password))
+        row = cursor.fetchone()
+        if row:
+            user_id, role = row
+            cursor.execute("SELECT name FROM customers WHERE user_id = :1", (user_id,))
+            name_row = cursor.fetchone()
+            name = name_row[0] if name_row else "Admin"
+            return jsonify({"message": role, "name": name})
+        else:
+            return jsonify({"error": "Invalid credentials"}), 401
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 def log_security_event(user_id, log_type):
     try:
@@ -164,6 +165,30 @@ def register():
     except Exception as e:
         print("Registration error:", e)
         return jsonify({"error": "Registration failed."})
+
+@app.route("/admin_dashboard.html")
+def serve_admin_dashboard():
+    return send_from_directory(app.static_folder, "admin_dashboard.html")
+
+@app.route("/admin/logs", methods=["GET"])
+def get_logs():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT u.username, l.log_type, TO_CHAR(l.timestamp, 'YYYY-MM-DD HH24:MI:SS')
+            FROM logs l
+            LEFT JOIN users u ON l.user_id = u.user_id
+            ORDER BY l.timestamp DESC
+        """)
+        rows = cursor.fetchall()
+        logs = [{"username": r[0], "log_type": r[1], "timestamp": r[2]} for r in rows]
+        return jsonify(logs), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
     
 @app.route('/dashboard/<username>', methods=['GET'])
 def get_dashboard_data(username):

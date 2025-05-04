@@ -15,7 +15,6 @@ function loginUser() {
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
 
-  // Log suspicious patterns
   if (isSuspicious(email) || isSuspicious(password)) {
     logSuspiciousActivity(email, "sql_injection_attempt");
   }
@@ -33,7 +32,12 @@ function loginUser() {
     } else {
       localStorage.setItem("user_name", data.name);
       localStorage.setItem("username", email);
-      window.location.href = "/user_page.html";
+
+      if (data.message === "admin") {
+        window.location.href = "/admin_dashboard.html";
+      } else {
+        window.location.href = "/user_page.html";
+      }
     }
   })
   .catch(err => {
@@ -77,6 +81,8 @@ function loginUser() {
 
 
   function loadDashboard() {
+  // Only run on user_page.html to avoid admin dashboard conflict
+  if (!window.location.href.includes("user_page.html")) return;
     const username = localStorage.getItem("username");
   
     if (!username) {
