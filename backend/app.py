@@ -125,10 +125,10 @@ def register():
         # Insert into users table
         user_id_var = cursor.var(cx_Oracle.NUMBER)
         cursor.execute("""
-            INSERT INTO users (username, password, email, ssn)
-            VALUES (:1, :2, :3, :4)
-            RETURNING user_id INTO :5
-        """, (username, password, email, ssn, user_id_var))
+            INSERT INTO users (username, password, name, last_name, email, ssn)
+            VALUES (:1, :2, :3, :4, :5, :6)
+            RETURNING user_id INTO :7
+        """, (username, password, name, last_name, email, ssn, user_id_var))
 
         user_id = int(user_id_var.getvalue()[0])
 
