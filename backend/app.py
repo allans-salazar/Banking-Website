@@ -50,7 +50,22 @@ def login():
         })
     else:
         return jsonify({"error": "Invalid credentials"})
-    
+
+def log_security_event(user_id, log_type):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("""
+            INSERT INTO logs (user_id, log_type)
+            VALUES (:1, :2)
+        """, (user_id, log_type))
+        connection.commit()
+    except Exception as e:
+        print(f"Logging error: {e}")
+    finally:
+        cursor.close()
+        connection.close()    
+
 @app.route('/sign_up.html')
 def serve_sign_up():
     return send_from_directory(template_dir, 'sign_up.html')
@@ -58,6 +73,28 @@ def serve_sign_up():
 @app.route('/user_page.html')
 def serve_user_page():
     return send_from_directory(template_dir, 'user_page.html')
+
+@app.route('/log_suspicious', methods=['POST'])
+def log_suspicious():
+    data = request.get_json()
+    username = data.get("username")
+    log_type = data.get("log_type", "suspicious_input")
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT user_id FROM users WHERE username = :1", (username,))
+        result = cursor.fetchone()
+        user_id = result[0] if result else None
+
+        cursor.execute("INSERT INTO logs (user_id, log_type) VALUES (:1, :2)", (user_id, log_type))
+        connection.commit()
+        return jsonify({'message': 'Log recorded'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
 # === API: Register route ===
 @app.route('/register', methods=['POST'])

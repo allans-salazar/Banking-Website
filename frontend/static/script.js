@@ -1,6 +1,24 @@
+function isSuspicious(input) {
+  const patterns = ["'", "--", ";", "/*", "OR 1=1"];
+  return patterns.some(p => input.includes(p));
+}
+
+function logSuspiciousActivity(username, type) {
+  fetch('http://127.0.0.1:5000/log_suspicious', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, log_type: type })
+  });
+}
+
 function loginUser() {
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
+
+  // Log suspicious patterns
+  if (isSuspicious(email) || isSuspicious(password)) {
+    logSuspiciousActivity(email, "sql_injection_attempt");
+  }
 
   fetch('http://127.0.0.1:5000/login', {
     method: 'POST',
@@ -10,9 +28,9 @@ function loginUser() {
   .then(res => res.json())
   .then(data => {
     if (data.error) {
+      logSuspiciousActivity(email, "failed_login");
       alert("Login failed: " + data.error);
     } else {
-      // Save name to local storage and redirect
       localStorage.setItem("user_name", data.name);
       localStorage.setItem("username", email);
       window.location.href = "/user_page.html";
