@@ -63,6 +63,47 @@ def serve_user_page():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+    username = data['username']
+    password = data['password']
+    email = data['email']
+    ssn = data['ssn']
+    name = data['name']
+    last_name = data['last_name']
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Insert into users table
+        user_id_var = cursor.var(cx_Oracle.NUMBER)
+        cursor.execute("""
+            INSERT INTO users (username, password, email, ssn)
+            VALUES (:1, :2, :3, :4)
+            RETURNING user_id INTO :5
+        """, (username, password, email, ssn, user_id_var))
+
+        user_id = int(user_id_var.getvalue()[0])
+
+        # Insert into customers table
+        cursor.execute("""
+            INSERT INTO customers (user_id, name, last_name)
+            VALUES (:1, :2, :3)
+        """, (user_id, name, last_name))
+
+        connection.commit()
+        return jsonify({'message': 'User registered successfully'}), 200
+
+    except cx_Oracle.DatabaseError as e:
+        error_message = str(e)
+        return jsonify({'error': f'Registration error: {error_message}'}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+def register():
+    data = request.get_json()
 
     name = data.get("name")
     lastname = data.get("lastname")

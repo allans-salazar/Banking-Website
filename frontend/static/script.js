@@ -26,13 +26,13 @@ function loginUser() {
 
   function registerUser() {
     const name = document.getElementById("name").value;
-    const lastname = document.getElementById("lastname").value;
+    const last_name = document.getElementById("last_name").value;
     const username = document.getElementById("username").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const ssn = document.getElementById("ssn").value;
 
-    if (!name || !lastname || !username || !email || !password || !ssn) {
+    if (!name || !last_name || !username || !email || !password || !ssn) {
       alert("Please fill out all fields.");
       return;
     }
@@ -40,7 +40,7 @@ function loginUser() {
     fetch("http://127.0.0.1:5000/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, lastname, username, email, password, ssn })
+      body: JSON.stringify({ name, last_name, username, email, password, ssn })
     })
     .then(res => res.json())
     .then(data => {
