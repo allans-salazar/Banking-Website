@@ -3,6 +3,34 @@ from flask_cors import CORS
 import cx_Oracle
 import os
 
+'''
+Here are the explanations for the libraries used in this code:
+
+- Flask is a micro web framework for Python. It is lightweight and easy to use, making it a popular choice for building web applications. 
+Using request, jsonify, send_from_directory, and CORS from flask to handle requests. 
+
+    request:
+        •	Used to handle incoming HTTP requests, especially to access POST data from forms or JSON.
+        •	Example: request.get_json()
+
+    jsonify:
+        •	Converts Python dictionaries or lists into JSON-formatted HTTP responses.
+        •	Useful for APIs and client-server communication.
+
+    send_from_directory:
+        •	Lets you serve static files (e.g. HTML, CSS, JS) from a folder like your frontend/.
+        •	Example: send_from_directory(app.static_folder, "index.html")
+
+    CORS:
+        •	Enables requests from different origins (like accessing Flask from localhost:5000 while your HTML is hosted at another port or location).
+        •	Prevents browser security errors when making frontend-to-backend API calls.
+
+    
+- cx_Oracle is Oracle’s official Python library for connecting to Oracle databases. Used to create database connections, run queries, and handle results.
+
+- os gives access to operating system-level functions like file paths, environment variables, and directory access.
+'''
+
 # === Setup paths for frontend/static and frontend/index.html ===
 base_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.abspath(os.path.join(base_dir, '..', 'frontend'))
@@ -11,6 +39,12 @@ static_dir = os.path.join(template_dir, 'static')
 # === Create Flask app with static/template folders ===
 app = Flask(__name__, static_folder="../frontend", static_url_path="/")
 CORS(app)
+
+'''
+The word "Serve" is how the Python backend delivers static pages like HTML, CSS, or JavaScript.
+So when inserting these codes the Flask listens for a request to /file.html (usually from typing it in the browser or clicking a link).
+Then it responds by sending the sign_up.html file from your template_dir.
+'''
 
 # === Serve index.html ===
 @app.route('/')
@@ -24,7 +58,13 @@ connection = cx_Oracle.connect(user="system", password="oracle", dsn=dsn)
 def get_db_connection():
     return cx_Oracle.connect(user="system", password="oracle", dsn="localhost:1521/ORCLCDB")
 
-# === API: Login route ===
+
+''' 
+API: Login route for users and admins --
+This route handles user login and checks for failed login attempts. If a user has 5 or more failed login attempts, they are blocked
+This is enabled when the function "login_user" is called from the frontend in index.html. 
+'''
+
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -42,6 +82,7 @@ def login():
         """, (username,))
         failed_count = cursor.fetchone()[0]
 
+        # If user has 5 or more failed login attempts, block them
         if failed_count >= 5:
             cursor.execute("""
                 INSERT INTO logs (user_id, log_type)
@@ -50,13 +91,14 @@ def login():
             conn.commit()
             return jsonify({"error": "You have been blocked due to too many failed login attempts."}), 403
 
-        # Check credentials
+        # Validation of credentials
         cursor.execute("""
             SELECT user_id, role FROM users
             WHERE username = :1 AND password = :2
         """, (username, password))
         row = cursor.fetchone()
 
+        # If credentials are valid, fetch user role and name
         if row:
             user_id, role = row
             cursor.execute("SELECT name FROM customers WHERE user_id = :1", (user_id,))
@@ -64,7 +106,7 @@ def login():
             name = name_row[0] if name_row else "Admin"
             return jsonify({"message": role, "name": name})
         else:
-            # Log failed login attempt
+            # Else, login failed... inserting a login attempt in Logs table
             cursor.execute("""
                 INSERT INTO logs (user_id, log_type)
                 VALUES ((SELECT user_id FROM users WHERE username = :1), 'failed_login')
@@ -77,14 +119,25 @@ def login():
         cursor.close()
         conn.close()
 
+# === Serve sign_up.html ===
 @app.route('/sign_up.html')
 def serve_sign_up():
     return send_from_directory(template_dir, 'sign_up.html')
 
+# === Serve user_page.html ===
 @app.route('/user_page.html')
 def serve_user_page():
     return send_from_directory(template_dir, 'user_page.html')
 
+
+'''
+This route in Flask is used to record suspicious activity, like:
+	•	Failed login attempts
+	•	SQL injection attempts
+	•	Incorrect admin PINs
+
+This route is called when the function "log_suspicious" is called from the frontend in index.html.
+'''
 @app.route('/log_suspicious', methods=['POST'])
 def log_suspicious():
     data = request.get_json()
@@ -94,10 +147,13 @@ def log_suspicious():
     try:
         connection = get_db_connection()
         cursor = connection.cursor()
+
+        #Find user_id by username
         cursor.execute("SELECT user_id FROM users WHERE username = :1", (username,))
         result = cursor.fetchone()
         user_id = result[0] if result else None
 
+        # If user_id is not found, return an error
         cursor.execute("INSERT INTO logs (user_id, log_type) VALUES (:1, :2)", (user_id, log_type))
         connection.commit()
         return jsonify({'message': 'Log recorded'}), 200
@@ -107,9 +163,16 @@ def log_suspicious():
         cursor.close()
         connection.close()
 
-# === API: Register route ===
+'''
+This Flask route handles user registration by:
+	•	Receiving new user data from the frontend
+	•	Inserting that data into the users and customers tables in your Oracle database
+
+sign_up.html is connected to a function in script.js the function is called "registerUser".
+'''
 @app.route('/register', methods=['POST'])
 def register():
+    # Get data from the request (frontend)
     data = request.get_json()
     username = data['username']
     password = data['password']
@@ -122,7 +185,7 @@ def register():
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        # Insert into users table
+        # Insert the data into users table
         user_id_var = cursor.var(cx_Oracle.NUMBER)
         cursor.execute("""
             INSERT INTO users (username, password, name, last_name, email, ssn)
@@ -150,41 +213,27 @@ def register():
             cursor.close()
         if connection:
             connection.close()
-def register():
-    data = request.get_json()
 
-    name = data.get("name")
-    lastname = data.get("lastname")
-    username = data.get("username")
-    email = data.get("email")
-    password = data.get("password")
-    ssn = data.get("ssn")
-
-    # Basic validation
-    if not all([name, lastname, username, email, password, ssn]):
-        return jsonify({"error": "Missing required fields"})
-
-    try:
-        cursor = connection.cursor()
-        cursor.execute("""
-            INSERT INTO users (name, last_name, username, email, password, ssn, role)
-            VALUES (:1, :2, :3, :4, :5, :6, 'customer')
-        """, (name, lastname, username, email, password, ssn))
-        connection.commit()
-        return jsonify({"message": "Account created successfully!"})
-    except Exception as e:
-        print("Registration error:", e)
-        return jsonify({"error": "Registration failed."})
-
+# === Serve admin_.html ===
 @app.route("/admin_dashboard.html")
 def serve_admin_dashboard():
     return send_from_directory(app.static_folder, "admin_dashboard.html")
 
+'''
+This route is used to fetch logs from the database for the admin dashboard:
+    •   View failed login attempts
+    •   View failed 2FA PIN attempts
+    •   View SQL injection attempts
+
+It retrieves the logs from the logs table and joins it with the users table to get the username.
+This is called when the function "getLogs" is called from the frontend in admin_dashboard.html.
+'''
 @app.route("/admin/logs", methods=["GET"])
 def get_logs():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+        # Query all logs with user information
         cursor.execute("""
             SELECT u.username, l.log_type, TO_CHAR(l.timestamp, 'YYYY-MM-DD HH24:MI:SS')
             FROM logs l
@@ -200,6 +249,13 @@ def get_logs():
         cursor.close()
         conn.close()
     
+'''
+This route is used to fetch user page:
+    •   Fetches the user's name and balance from the customers table
+    •   Fetches the user's transactions from the transactions table
+
+This is called when the function "getDashboardData" is called from the frontend in user_page.html.
+'''
 @app.route('/dashboard/<username>', methods=['GET'])
 def get_dashboard_data(username):
     connection = None
@@ -217,7 +273,7 @@ def get_dashboard_data(username):
 
         user_id = result[0]
 
-        # Fetch balance and name from customers
+        # Fetch Balance and Name from Customers Table
         cursor.execute("SELECT name, balance FROM customers WHERE user_id = :1", [user_id])
         customer = cursor.fetchone()
 
@@ -226,7 +282,7 @@ def get_dashboard_data(username):
 
         name, balance = customer
 
-        # Fetch transactions
+        # Fetch transactions from Transactions Table
         cursor.execute("""
             SELECT TO_CHAR(transaction_date, 'YYYY-MM-DD HH24:MI:SS'), transaction_type, amount 
             FROM transactions 
@@ -239,7 +295,7 @@ def get_dashboard_data(username):
             {"date": row[0], "description": row[1], "amount": float(row[2])}
             for row in transactions
         ]
-
+        #Format and send data to frontend
         return jsonify({
             "name": name,
             "balance": float(balance),
