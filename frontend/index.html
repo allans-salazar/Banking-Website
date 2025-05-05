@@ -4,13 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <title>Alpha Fire Banking - Login</title>
+
+  <!-- ====== Embedded CSS Styling ====== -->
   <style>
+    /* General Page Styling */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #f2f6f5;
     }
 
+    /* Header Styling */
     header {
       background-color: #e74c3c;
       color: white;
@@ -24,6 +28,7 @@
       margin: 0;
     }
 
+    /* "Create Account" Button */
     .create-btn {
       background-color: white;
       color: #e74c3c;
@@ -34,12 +39,14 @@
       cursor: pointer;
     }
 
+    /* Centered Login Container */
     .container {
       display: flex;
       justify-content: center;
       margin-top: 100px;
     }
 
+    /* Login Form Box */
     .form-box {
       background-color: white;
       padding: 30px;
@@ -49,6 +56,7 @@
       text-align: center;
     }
 
+    /* Input Fields in Login Form */
     .form-box input {
       width: 90%;
       padding: 10px;
@@ -57,6 +65,7 @@
       border: 1px solid #ccc;
     }
 
+    /* Login Button */
     .form-box button {
       background-color: #e74c3c;
       color: white;
@@ -67,6 +76,7 @@
       cursor: pointer;
     }
 
+    /* Modal Overlay for Registration (currently unused) */
     .modal {
       display: none;
       position: fixed;
@@ -78,6 +88,7 @@
       align-items: center;
     }
 
+    /* Modal Content Box Styling */
     .modal-content {
       background-color: white;
       padding: 25px;
@@ -87,6 +98,7 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
     }
 
+    /* Close Button for Modal */
     .close {
       float: right;
       font-size: 20px;
@@ -97,21 +109,26 @@
 </head>
 <body>
 
+  <!-- ====== Top Navigation Bar ====== -->
   <header>
     <h1>Alpha Fire Banking</h1>
+    <!-- Link to open the account registration page -->
     <a href="/sign_up.html" class="create-btn">Create Account</a>
   </header>
 
+  <!-- ====== Login Form Section ====== -->
   <div class="container">
     <div class="form-box">
       <h2>Login</h2>
+      <!-- Input fields for login credentials -->
       <input type="text" id="login-email" placeholder="Email">
       <input type="password" id="login-password" placeholder="Password">
+      <!-- Login button triggers JS function -->
       <button onclick="loginUser()">Login</button>
     </div>
   </div>
 
-  <!-- Registration Modal -->
+  <!-- ====== Modal for Registration (not actively used, placeholder) ====== -->
   <div id="registerModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeRegister()">&times;</span>
@@ -122,7 +139,7 @@
     </div>
   </div>
 
-  <!-- Load external JS -->
+  <!-- ====== Link to JavaScript logic ====== -->
   <script src="/static/script.js"></script>
 
 </body>

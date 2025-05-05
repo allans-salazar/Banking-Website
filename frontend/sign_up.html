@@ -1,16 +1,20 @@
-<!-- HTML Document for Alpha Fire Banking Creating a Account Page -->
+<!-- HTML Document for Alpha Fire Banking Creating an Account Page -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Alpha Fire Banking - Sign Up</title>
+
+  <!-- ====== Embedded CSS Styling ====== -->
   <style>
+    /* Reset default margin and set font */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #f2f6f5;
     }
 
+    /* Header styling with title */
     header {
       background-color: #e74c3c;
       color: white;
@@ -23,12 +27,14 @@
       margin: 0;
     }
 
+    /* Centered container for the form */
     .container {
       display: flex;
       justify-content: center;
       margin-top: 80px;
     }
 
+    /* Box containing the sign-up form */
     .form-box {
       background-color: white;
       padding: 30px;
@@ -43,6 +49,7 @@
       color: #333;
     }
 
+    /* Input fields for registration form */
     .form-box input {
       width: 90%;
       padding: 10px;
@@ -51,6 +58,7 @@
       border: 1px solid #ccc;
     }
 
+    /* Register button styling */
     .form-box button {
       background-color: #e74c3c;
       color: white;
@@ -63,30 +71,40 @@
       margin-top: 10px;
     }
 
+    /* Button hover effect */
     .form-box button:hover {
       background-color: #d63b2f;
     }
   </style>
 </head>
+
 <body>
 
+  <!-- ====== Top Banner ====== -->
   <header>
     <h1>Alpha Fire Banking</h1>
   </header>
 
+  <!-- ====== Registration Form Section ====== -->
   <div class="container">
     <div class="form-box">
       <h2>Create Account</h2>
+
+      <!-- Input fields for user registration -->
       <input type="text" id="name" placeholder="First Name">
       <input type="text" id="last_name" placeholder="Last Name">
       <input type="text" id="username" placeholder="Username">
       <input type="email" id="email" placeholder="Email">
       <input type="password" id="password" placeholder="Password">
       <input type="text" id="ssn" placeholder="SSN">
+
+      <!-- Button to trigger registration logic in script.js -->
       <button onclick="registerUser()">Register</button>
     </div>
   </div>
 
+  <!-- ====== Link to JS Logic ====== -->
   <script src="/static/script.js"></script>
+
 </body>
 </html>
