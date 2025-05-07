@@ -1,4 +1,4 @@
-# DATABASE_PROJECT
+# Banking Website (Security Controls)
 For CSCI 3268 & CSCI_6623_81 Database Systems 
 
 ## SQL Injection Detection / Access Control System

@@ -21,7 +21,7 @@ Using request, jsonify, send_from_directory, and CORS from flask to handle reque
         •	Lets you serve static files (e.g. HTML, CSS, JS) from a folder like your frontend/.
         •	Example: send_from_directory(app.static_folder, "index.html")
 
-    CORS:
+    CORS (Cross-Origin Resource Sharing):
         •	Enables requests from different origins (like accessing Flask from localhost:5000 while your HTML is hosted at another port or location).
         •	Prevents browser security errors when making frontend-to-backend API calls.
 
